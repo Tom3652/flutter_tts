@@ -5,18 +5,25 @@ endif()
 set(PROJECT_NAME "flutter_tts")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
-################ NuGet intall begin ################
+################ NuGet install begin ################
 find_program(NUGET_EXE NAMES nuget)
 if(NOT NUGET_EXE)
-	message("NUGET.EXE not found.")
-	message(FATAL_ERROR "Please install this executable, and run CMake again.")
+  message(FATAL_ERROR "nuget.exe not found in PATH. Please install NuGet CLI from https://learn.microsoft.com/nuget/install-nuget-client-tools")
 endif()
 
+# Install Microsoft.Windows.CppWinRT package
 execute_process(
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/nuget.exe
-  ARGS install "Microsoft.Windows.CppWinRT" -Version 2.0.210503.1 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+  COMMAND ${NUGET_EXE} install Microsoft.Windows.CppWinRT
+         -Version 2.0.210503.1
+         -ExcludeVersion
+         -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE result
 )
 
+if(NOT result EQUAL 0)
+  message(FATAL_ERROR "NuGet install failed with exit code ${result}")
+endif()
 ################ NuGet install end ################
 
 # This value is used when generating builds using this plugin, so it must
